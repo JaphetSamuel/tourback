@@ -1,6 +1,15 @@
-from db_config import BaseMeta
+
+import databases
+import sqlalchemy
 import ormar
 
+DATABASE_URL = "sqlite:///pharm.db"
+database = databases.Database(DATABASE_URL)
+metadata = sqlalchemy.MetaData()
+
+class BaseMeta(ormar.ModelMeta):
+    database = database
+    metadata = metadata
 
 class Pharmacie(ormar.Model):
     class Meta(BaseMeta):
@@ -15,3 +24,6 @@ class Pharmacie(ormar.Model):
     adresse: str |None = ormar.String(max_length=200)
     isOpen: bool = ormar.Boolean(default=True)
     isActive: bool = ormar.Boolean(default=True)
+
+engine = sqlalchemy.create_engine(DATABASE_URL)
+metadata.create_all(engine)
